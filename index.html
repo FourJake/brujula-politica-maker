@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Brújula Política Maker</title>
+<style>
+body {
+    background:#0f0f0f;
+    color:white;
+    font-family:Arial, sans-serif;
+    text-align:center;
+    margin:0;
+    padding:20px;
+}
+canvas{
+    border:2px solid #aaa;
+    background:#111;
+    touch-action:manipulation;
+}
+#popup{
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    background:#222;
+    padding:15px;
+    border-radius:10px;
+    display:none;
+    z-index:10;
+}
+#popup input,#popup button{
+    width:100%;
+    margin:6px 0;
+    padding:6px;
+}
+</style>
+</head>
+<body>
+
+<h1>🧭 Brújula Política Maker</h1>
+<p>Tocá solo intersecciones para crear puntos</p>
+
+<canvas id="canvas" width="500" height="500"></canvas>
+
+<div id="popup">
+    <input id="pointName" placeholder="Nombre del punto">
+    <input id="pointColor" type="color" value="#ff0000">
+    <button onclick="addPoint()">Crear punto</button>
+</div>
+
+<script>
+const canvas=document.getElementById("canvas");
+const ctx=canvas.getContext("2d");
+const size=canvas.width;
+const gridSize=25;
+const center=size/2;
+const points=[];
+let px=null,py=null;
+
+function drawQuadrants(){
+    ctx.fillStyle="rgba(255,80,80,0.35)";
+    ctx.fillRect(0,0,center,center);
+    ctx.fillStyle="rgba(80,120,255,0.35)";
+    ctx.fillRect(center,0,center,center);
+    ctx.fillStyle="rgba(120,255,120,0.35)";
+    ctx.fillRect(0,center,center,center);
+    ctx.fillStyle="rgba(190,140,255,0.35)";
+    ctx.fillRect(center,center,center,center);
+}
+
+function drawGrid(){
+    ctx.clearRect(0,0,size,size);
+    drawQuadrants();
+
+    ctx.strokeStyle="#333";
+    for(let i=0;i<=size;i+=gridSize){
+        ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,size); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(size,i); ctx.stroke();
+    }
+
+    ctx.strokeStyle="#aaa";
+    ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(center,0); ctx.lineTo(center,size); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0,center); ctx.lineTo(size,center); ctx.stroke();
+    ctx.lineWidth=1;
+
+    ctx.fillStyle="white";
+    ctx.fillText("Autoritario",center-40,15);
+    ctx.fillText("Libertario",center-40,size-10);
+    ctx.fillText("Izq.",5,center-5);
+    ctx.fillText("Der.",size-35,center-5);
+
+    drawPoints();
+}
+
+function drawPoints(){
+    points.forEach(p=>{
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,6,0,Math.PI*2);
+        ctx.fillStyle=p.color;
+        ctx.fill();
+        ctx.fillStyle="white";
+        ctx.fillText(p.name,p.x+8,p.y-8);
+    });
+}
+
+canvas.addEventListener("click",e=>{
+    const r=canvas.getBoundingClientRect();
+    let x=e.clientX-r.left;
+    let y=e.clientY-r.top;
+    let gx=Math.round(x/gridSize)*gridSize;
+    let gy=Math.round(y/gridSize)*gridSize;
+
+    if(Math.abs(gx-x)<10 && Math.abs(gy-y)<10){
+        px=gx; py=gy;
+        document.getElementById("popup").style.display="block";
+    }
+});
+
+function addPoint(){
+    const name=document.getElementById("pointName").value||"Punto";
+    const color=document.getElementById("pointColor").value;
+    points.push({x:px,y:py,name,color});
+    document.getElementById("popup").style.display="none";
+    document.getElementById("pointName").value="";
+    drawGrid();
+}
+
+drawGrid();
+</script>
+
+</body>
+</html>

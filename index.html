@@ -40,6 +40,7 @@ canvas{
     height: 500px;
 }
 
+/* POPUP */
 #popup{
     position:fixed;
     top:50%;
@@ -47,22 +48,58 @@ canvas{
     transform:translate(-50%,-50%);
     background:#222;
     padding:18px 15px 15px;
-    border-radius:10px;
+    border-radius:12px;
     display:none;
     z-index:10;
     width: 260px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.6);
 }
 
-#popup input,#popup button{
+#popup input[type="text"]{
     width:100%;
-    margin:6px 0;
-    padding:6px;
+    margin:6px 0 12px;
+    padding:8px;
+    border-radius:8px;
+    border:none;
+    font-size:14px;
+}
+
+/* COLOR PICKER FIX */
+#popup input[type="color"]{
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 42px;
+    border: none;
+    border-radius: 10px;
+    padding: 0;
+    background: none;
+    cursor: pointer;
+}
+
+#popup input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+#popup input[type="color"]::-webkit-color-swatch {
+    border-radius: 10px;
+    border: 2px solid #444;
+}
+
+#popup button{
+    width:100%;
+    margin-top:12px;
+    padding:10px;
+    border-radius:10px;
+    border:none;
+    background:#eee;
+    font-size:15px;
 }
 
 #closePopup{
     position:absolute;
     top:6px;
-    right:8px;
+    right:10px;
     font-size:18px;
     cursor:pointer;
     color:#bbb;
@@ -96,15 +133,15 @@ Tocá un <b>punto existente</b> para eliminarlo
 
 <div id="popup">
     <div id="closePopup" onclick="closePopup()">✕</div>
-    <input id="pointName" placeholder="Nombre del punto">
+    <input id="pointName" type="text" placeholder="Nombre del punto">
     <input id="pointColor" type="color" value="#ff0000">
     <button onclick="addPoint()">Crear punto</button>
 </div>
 
-<div id="version">v1.5 · popup closable</div>
+<div id="version">v1.6 · color picker fixed</div>
 
 <script>
-const VERSION = "v1.5 · popup closable";
+const VERSION = "v1.6 · color picker fixed";
 
 const canvas=document.getElementById("canvas");
 const ctx=canvas.getContext("2d");

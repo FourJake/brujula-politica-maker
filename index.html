@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Brújula Política Maker</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <style>
 body {
     background:#0f0f0f;
@@ -10,13 +11,35 @@ body {
     font-family:Arial, sans-serif;
     text-align:center;
     margin:0;
-    padding:20px;
+    padding:12px;
 }
+
+h1 {
+    margin: 8px 0 6px 0;
+    font-size: 22px;
+}
+
+p {
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+#canvas-container {
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
 canvas{
     border:2px solid #aaa;
     background:#111;
     touch-action:manipulation;
+    max-width: 92vw;
+    max-height: 92vw;
+    width: 500px;
+    height: 500px;
 }
+
 #popup{
     position:fixed;
     top:50%;
@@ -27,11 +50,22 @@ canvas{
     border-radius:10px;
     display:none;
     z-index:10;
+    width: 260px;
 }
+
 #popup input,#popup button{
     width:100%;
     margin:6px 0;
     padding:6px;
+}
+
+#version {
+    position: fixed;
+    bottom: 8px;
+    right: 10px;
+    font-size: 11px;
+    color: #bbb;
+    opacity: 0.8;
 }
 </style>
 </head>
@@ -43,7 +77,9 @@ Tocá una <b>intersección</b> para crear un punto<br>
 Tocá un <b>punto existente</b> para eliminarlo
 </p>
 
-<canvas id="canvas" width="500" height="500"></canvas>
+<div id="canvas-container">
+    <canvas id="canvas" width="500" height="500"></canvas>
+</div>
 
 <div id="popup">
     <input id="pointName" placeholder="Nombre del punto">
@@ -51,7 +87,11 @@ Tocá un <b>punto existente</b> para eliminarlo
     <button onclick="addPoint()">Crear punto</button>
 </div>
 
+<div id="version">v1.4 · commit loaded</div>
+
 <script>
+const VERSION = "v1.4 · commit loaded";
+
 const canvas=document.getElementById("canvas");
 const ctx=canvas.getContext("2d");
 const size=canvas.width;
@@ -59,6 +99,8 @@ const gridSize=25;
 const center=size/2;
 const points=[];
 let px=null,py=null;
+
+document.getElementById("version").textContent = VERSION;
 
 function drawQuadrants(){
     ctx.fillStyle="rgba(255,80,80,0.35)";
@@ -88,10 +130,11 @@ function drawGrid(){
     ctx.lineWidth=1;
 
     ctx.fillStyle="white";
-    ctx.fillText("Autoritario",center-40,15);
-    ctx.fillText("Libertario",center-40,size-10);
-    ctx.fillText("Izq.",5,center-5);
-    ctx.fillText("Der.",size-35,center-5);
+    ctx.font="12px Arial";
+    ctx.fillText("Autoritario",center-38,14);
+    ctx.fillText("Libertario",center-38,size-6);
+    ctx.fillText("Izq.",5,center-4);
+    ctx.fillText("Der.",size-32,center-4);
 
     drawPoints();
 }
@@ -109,14 +152,13 @@ function drawPoints(){
 
 canvas.addEventListener("click",e=>{
     const r=canvas.getBoundingClientRect();
-    let x=e.clientX-r.left;
-    let y=e.clientY-r.top;
+    let x=(e.clientX-r.left)*(size/r.width);
+    let y=(e.clientY-r.top)*(size/r.height);
 
-    // 1️⃣ Detectar si tocó un punto existente
+    // eliminar punto
     for(let i=points.length-1;i>=0;i--){
         const p=points[i];
-        const dist=Math.hypot(p.x-x,p.y-y);
-        if(dist<8){
+        if(Math.hypot(p.x-x,p.y-y)<8){
             if(confirm("¿Eliminar este punto?")){
                 points.splice(i,1);
                 drawGrid();
@@ -125,7 +167,7 @@ canvas.addEventListener("click",e=>{
         }
     }
 
-    // 2️⃣ Si no tocó punto, verificar intersección
+    // crear punto solo en intersección
     let gx=Math.round(x/gridSize)*gridSize;
     let gy=Math.round(y/gridSize)*gridSize;
 

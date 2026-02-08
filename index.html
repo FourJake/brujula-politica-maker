@@ -38,7 +38,10 @@ canvas{
 <body>
 
 <h1>🧭 Brújula Política Maker</h1>
-<p>Tocá solo intersecciones para crear puntos</p>
+<p>
+Tocá una <b>intersección</b> para crear un punto<br>
+Tocá un <b>punto existente</b> para eliminarlo
+</p>
 
 <canvas id="canvas" width="500" height="500"></canvas>
 
@@ -108,6 +111,21 @@ canvas.addEventListener("click",e=>{
     const r=canvas.getBoundingClientRect();
     let x=e.clientX-r.left;
     let y=e.clientY-r.top;
+
+    // 1️⃣ Detectar si tocó un punto existente
+    for(let i=points.length-1;i>=0;i--){
+        const p=points[i];
+        const dist=Math.hypot(p.x-x,p.y-y);
+        if(dist<8){
+            if(confirm("¿Eliminar este punto?")){
+                points.splice(i,1);
+                drawGrid();
+            }
+            return;
+        }
+    }
+
+    // 2️⃣ Si no tocó punto, verificar intersección
     let gx=Math.round(x/gridSize)*gridSize;
     let gy=Math.round(y/gridSize)*gridSize;
 

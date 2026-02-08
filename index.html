@@ -46,7 +46,7 @@ canvas{
     left:50%;
     transform:translate(-50%,-50%);
     background:#222;
-    padding:15px;
+    padding:18px 15px 15px;
     border-radius:10px;
     display:none;
     z-index:10;
@@ -57,6 +57,19 @@ canvas{
     width:100%;
     margin:6px 0;
     padding:6px;
+}
+
+#closePopup{
+    position:absolute;
+    top:6px;
+    right:8px;
+    font-size:18px;
+    cursor:pointer;
+    color:#bbb;
+}
+
+#closePopup:hover{
+    color:white;
 }
 
 #version {
@@ -82,15 +95,16 @@ Tocá un <b>punto existente</b> para eliminarlo
 </div>
 
 <div id="popup">
+    <div id="closePopup" onclick="closePopup()">✕</div>
     <input id="pointName" placeholder="Nombre del punto">
     <input id="pointColor" type="color" value="#ff0000">
     <button onclick="addPoint()">Crear punto</button>
 </div>
 
-<div id="version">v1.4 · commit loaded</div>
+<div id="version">v1.5 · popup closable</div>
 
 <script>
-const VERSION = "v1.4 · commit loaded";
+const VERSION = "v1.5 · popup closable";
 
 const canvas=document.getElementById("canvas");
 const ctx=canvas.getContext("2d");
@@ -155,7 +169,6 @@ canvas.addEventListener("click",e=>{
     let x=(e.clientX-r.left)*(size/r.width);
     let y=(e.clientY-r.top)*(size/r.height);
 
-    // eliminar punto
     for(let i=points.length-1;i>=0;i--){
         const p=points[i];
         if(Math.hypot(p.x-x,p.y-y)<8){
@@ -167,7 +180,6 @@ canvas.addEventListener("click",e=>{
         }
     }
 
-    // crear punto solo en intersección
     let gx=Math.round(x/gridSize)*gridSize;
     let gy=Math.round(y/gridSize)*gridSize;
 
@@ -177,11 +189,15 @@ canvas.addEventListener("click",e=>{
     }
 });
 
+function closePopup(){
+    document.getElementById("popup").style.display="none";
+}
+
 function addPoint(){
     const name=document.getElementById("pointName").value||"Punto";
     const color=document.getElementById("pointColor").value;
     points.push({x:px,y:py,name,color});
-    document.getElementById("popup").style.display="none";
+    closePopup();
     document.getElementById("pointName").value="";
     drawGrid();
 }
